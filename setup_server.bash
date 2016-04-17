@@ -32,8 +32,21 @@ su - catalog -c 'createdb'
 su - catalog -c 'createdb webcatalog'
 cd /home/catalog/fullstack-webdev-catalog
 su catalog -c 'python2 migrator.py db upgrade'
-su catalog -c 'python2 seed_database.py'
 
+# Seed database if not categories are found
+su catalog -c '
+is_seeded_database() {
+    psql -t -d webcatalog -c "select 1 from category limit 1" | grep -q .
+}
+if is_seeded_database; then
+    echo "Skipping database seed"
+else
+    python2 seed_database.py
+fi
+'
+
+echo 'Etc/UTC' > /etc/timezone
+dpkg-reconfigure -f noninteractive tzdata
 
 aptitude install apache2 -y
 sed -i 's/^Port\s.*/Port 2200/' /etc/ssh/sshd_config
@@ -45,3 +58,6 @@ grep -q ^grader /etc/sudoers || {
 }
 
 ufw enable <<< y
+
+echo "Process finished.
+Be sure to restart the server if need (i.e. kernel upgrade)"
