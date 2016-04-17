@@ -17,5 +17,31 @@ ufw allow http
 aptitude install git -y
 su - catalog -c "git clone https://github.com/diogovk/fullstack-webdev-catalog"
 
+apt-get -qqy update
+apt-get -qqy install postgresql python-psycopg2
+apt-get -qqy install python-sqlalchemy python-bs4
+apt-get -qqy install python-pip
+pip2 install Flask
+pip2 install oauth2client
+pip2 install requests
+pip2 install Flask-Migrate
+pip2 install dicttoxml
+pip2 install flask-wtf
+su - postgres -c 'createuser -dRS catalog'
+su - catalog -c 'createdb'
+su - catalog -c 'createdb webcatalog'
+cd /home/catalog/fullstack-webdev-catalog
+su catalog -c 'python2 migrator.py db upgrade'
+su catalog -c 'python2 seed_database.py'
+
+
 aptitude install apache2 -y
-ufw enable
+sed -i 's/^Port\s.*/Port 2200/' /etc/ssh/sshd_config
+service ssh restart
+
+
+grep -q ^grader /etc/sudoers || {
+    echo 'grader ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+}
+
+ufw enable <<< y
