@@ -10,7 +10,7 @@ aptitude install ufw
 ufw default allow outgoing
 ufw default deny incoming
 ufw allow 2200/tcp
-ufw allow ssh
+#ufw allow ssh
 ufw allow ntp
 ufw allow http
 
