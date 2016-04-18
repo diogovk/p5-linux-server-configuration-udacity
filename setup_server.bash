@@ -1,10 +1,21 @@
 #!/bin/bash
 
+# This script is intended to be idempotent, which mean you could
+# run it more than once and obtain the same result
 
 export DEBIAN_FRONTEND=noninteractive
 aptitude upgrade -y
 useradd -m grader
+passwd grader << EOF
+Mk7z73Pkk
+Mk7z73Pkk
+EOF
+
 useradd -m catalog
+passwd catalog << EOF
+Mk7z73Pkk
+Mk7z73Pkk
+EOF
 
 aptitude install ufw
 ufw default allow outgoing
@@ -65,16 +76,17 @@ chown www-data:www-data /home/catalog/fullstack-webdev-catalog
 service apache2 restart
 
 sed -i 's/^Port\s.*/Port 2200/' /etc/ssh/sshd_config
+sed -i 's/^PermitRootLogin\s.*/PermitRootLogin no/' /etc/ssh/sshd_config
 service ssh restart
 
 
 
 grep -q ^grader /etc/sudoers || {
-    echo 'grader ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+    echo 'grader ALL=(ALL:ALL) ALL' >> /etc/sudoers
 }
 
 ufw enable <<< y
 
 echo "-----------------------------
 Process finished.
-Be sure to restart the server if need (i.e. kernel upgrade)"
+Be sure to restart the server if needed (i.e. kernel upgrade)"
