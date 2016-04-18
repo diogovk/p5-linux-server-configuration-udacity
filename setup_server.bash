@@ -28,7 +28,9 @@ pip2 install Flask-Migrate
 pip2 install dicttoxml
 pip2 install flask-wtf
 su - postgres -c 'createuser -dRS catalog'
-su - postgres -c "psql -c \"ALTER USER catalog WITH PASSWORD 'mkbx00k'\""
+su - postgres -c "psql -c \"ALTER USER catalog WITH PASSWORD 'mkbx00k77P'\""
+sed -i "s/^app.config\['SQLALCHEMY_DATABASE_URI'\]\s*=.*/app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres:\/\/catalog:mkbx00k77P@localhost\/webcatalog'/" \
+/home/catalog/fullstack-webdev-catalog/app.py
 su - catalog -c 'createdb'
 su - catalog -c 'createdb webcatalog'
 cd /home/catalog/fullstack-webdev-catalog
@@ -57,6 +59,7 @@ grep -q WSGIScriptAlias /etc/apache2/sites-enabled/000-default.conf || {
 }
 
 chown -R www-data:www-data /home/catalog/fullstack-webdev-catalog/*
+chown www-data:www-data /home/catalog/fullstack-webdev-catalog
 
 
 service apache2 restart
