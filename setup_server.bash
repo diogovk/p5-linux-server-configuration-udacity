@@ -28,6 +28,7 @@ pip2 install Flask-Migrate
 pip2 install dicttoxml
 pip2 install flask-wtf
 su - postgres -c 'createuser -dRS catalog'
+su - postgres -c "psql -c \"ALTER USER catalog WITH PASSWORD 'mkbx00k'\""
 su - catalog -c 'createdb'
 su - catalog -c 'createdb webcatalog'
 cd /home/catalog/fullstack-webdev-catalog
@@ -48,9 +49,21 @@ fi
 echo 'Etc/UTC' > /etc/timezone
 dpkg-reconfigure -f noninteractive tzdata
 
-aptitude install apache2 -y
+aptitude install libapache2-mod-wsgi apache2 -y
+
+grep -q WSGIScriptAlias /etc/apache2/sites-enabled/000-default.conf || {
+    sed -i 's/<\/VirtualHost>/\tWSGIScriptAlias \/ \/var\/www\/html\/webcatalog.wsgi\n<\/VirtualHost>/g' \
+        /etc/apache2/sites-enabled/000-default.conf
+}
+
+chown -R www-data:www-data /home/catalog/fullstack-webdev-catalog/*
+
+
+service apache2 restart
+
 sed -i 's/^Port\s.*/Port 2200/' /etc/ssh/sshd_config
 service ssh restart
+
 
 
 grep -q ^grader /etc/sudoers || {
@@ -59,5 +72,6 @@ grep -q ^grader /etc/sudoers || {
 
 ufw enable <<< y
 
-echo "Process finished.
+echo "-----------------------------
+Process finished.
 Be sure to restart the server if need (i.e. kernel upgrade)"
