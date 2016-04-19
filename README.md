@@ -2,24 +2,31 @@
 
 # Access information
 
-Webapp URL: http://52.26.115.20/
-Host: 52.26.115.20
-Users: catalog grader
-Authentication: RSA Key based
+- Webapp URL: http://52.26.115.20/
+- Host: 52.26.115.20
+- Users: catalog grader
+- Authentication: RSA Key based
 
 # Software installed
 
-ufw - Uncomplicated Firewall
-git - Source Code Management and Distribution
-postgresql - Open Source Database used by the webapp
-apache2 - Web Server
-libapache2-mod-wsgi - WSGI support for Apache
+- ufw - Uncomplicated Firewall
+- git - Source Code Management and Distribution
+- postgresql - Open Source Database used by the webapp
+- apache2 - Web Server
+- libapache2-mod-wsgi - WSGI support for Apache
 
 ### Webapp dependencies
 
-python-psycopg2 python-sqlalchemy python-bs4
-python-pip Flask oauth2client requests
-Flask-Migrate dicttoxml flask-wtf
+- python-psycopg2 
+- python-sqlalchemy
+- python-bs4
+- python-pip
+- Flask
+- oauth2client
+- requests
+- Flask-Migrate
+- dicttoxml
+- flask-wtf
 
 ### Webapp information
 
