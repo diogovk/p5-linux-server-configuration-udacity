@@ -4,12 +4,17 @@
 # run it more than once and obtain the same result
 
 export DEBIAN_FRONTEND=noninteractive
+apt-get -qqy update
 aptitude upgrade -y
 useradd -m grader
 passwd grader << EOF
 Mk7z73Pkk
 Mk7z73Pkk
 EOF
+
+grep -q ^grader /etc/sudoers || {
+    echo 'grader ALL=(ALL:ALL) ALL' >> /etc/sudoers
+}
 
 useradd -m catalog
 passwd catalog << EOF
@@ -28,7 +33,6 @@ ufw allow http
 aptitude install git -y
 su - catalog -c "git clone https://github.com/diogovk/fullstack-webdev-catalog"
 
-apt-get -qqy update
 apt-get -qqy install postgresql python-psycopg2
 apt-get -qqy install python-sqlalchemy python-bs4
 apt-get -qqy install python-pip
@@ -69,9 +73,24 @@ grep -q WSGIScriptAlias /etc/apache2/sites-enabled/000-default.conf || {
         /etc/apache2/sites-enabled/000-default.conf
 }
 
+cat > /var/www/html/web_catalog.wsgi << \EOF
+import sys
+import os
+sys.path.insert(0, '/home/catalog/fullstack-webdev-catalog')
+os.chdir('/var/www/html')
+
+from web_catalog import app as application
+EOF
+
+
 chown -R www-data:www-data /home/catalog/fullstack-webdev-catalog/*
 chown www-data:www-data /home/catalog/fullstack-webdev-catalog
 
+cd /var/www/html
+ln -s /home/catalog/fullstack-webdev-catalog/static
+ln -s /home/catalog/fullstack-webdev-catalog/client_secret_webcatalog.json
+ln -s /home/catalog/fullstack-webdev-catalog/fb_client_secret_webcatalog.json
+ln -s /home/catalog/fullstack-webdev-catalog/templates
 
 service apache2 restart
 
@@ -81,9 +100,6 @@ service ssh restart
 
 
 
-grep -q ^grader /etc/sudoers || {
-    echo 'grader ALL=(ALL:ALL) ALL' >> /etc/sudoers
-}
 
 ufw enable <<< y
 
